@@ -77,12 +77,26 @@ public class BasicItemController {
         return "basic/item";
     }
 
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV4(Item item) {       // String 같은 단순 type 은 @RequestParam 이 적용되지만, 직접 만든 임의의 객체인 경우 @ModelAttribute 가 적용되기 때문에 생략 가능
 
         itemRepository.save(item);
         return "basic/item";
     }
+
+    @PostMapping("/add")
+    public String addItemV5(Item item) {
+
+        itemRepository.save(item);
+        /**
+         * PRG 패턴 : Post → Redirect → Get
+         * V4와 같이 상품 등록(add_post) 후 template 으로 이동하면 화면은 상세 페이지지만, url 은 /basic/items/add 인 상태이다.
+         * 그 상태에서 새로고침을 계속 하게되면 똑같은 상품이 id만 증가한 채 계속 둥록된다. (웹 브라우저의 새로고침은 마지막에 서버에 전송한 데이터를 다시 전송한다.)
+         * 이 이슈를 해결하기 위해 redirect 를 사용해서 실제 상품 상세 페이지로(/basic/item/{itemId}) 이동하게 한다.
+         */
+        return "redirect:/basic/items/" + item.getId();
+    }
+
 
     @GetMapping("/{itemId}/edit")
     public String editForm(@PathVariable("itemId") Long itemId, Model model) {
