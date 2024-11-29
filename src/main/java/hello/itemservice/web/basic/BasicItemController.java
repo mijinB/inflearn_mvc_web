@@ -6,10 +6,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,9 +45,43 @@ public class BasicItemController {
         return "basic/addForm";
     }
 
+//    @PostMapping("/add")
+    public String addItemV1(@RequestParam("itemName") String itemName,
+                            @RequestParam("price") int price,
+                            @RequestParam("quantity") Integer quantity,
+                            Model model) {
+        Item item = new Item();
+        item.setItemName(itemName);
+        item.setPrice(price);
+        item.setQuantity(quantity);
+
+        itemRepository.save(item);
+
+        model.addAttribute("item", item);
+
+        return "basic/item";
+    }
+
+//    @PostMapping("/add")
+    public String addItemV2(@ModelAttribute("item") Item item) {       // @ModelAttribute : Item 객체를 생성하고, 요청 파라미터의 값을 프로퍼티 접근법(set___)으로 입력해준다. & Model 생략 가능
+
+        itemRepository.save(item);
+//        model.addAttribute("item", item);     자동 추가, 생략 가능
+        return "basic/item";
+    }
+
+//    @PostMapping("/add")
+    public String addItemV3(@ModelAttribute Item item) {       // @ModelAttribute name 생략 시, class 이름에서 첫 글자만 소문자로 바꾼 단어로 name 사용(Item → item)
+
+        itemRepository.save(item);
+        return "basic/item";
+    }
+
     @PostMapping("/add")
-    public String save() {
-        return "xxx";
+    public String addItemV4(Item item) {       // String 같은 단순 type 은 @RequestParam 이 적용되지만, 직접 만든 임의의 객체인 경우 @ModelAttribute 가 적용되기 때문에 생략 가능
+
+        itemRepository.save(item);
+        return "basic/item";
     }
 
     /**
