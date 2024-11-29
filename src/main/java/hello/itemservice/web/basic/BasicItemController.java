@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class BasicItemController {
         return "basic/item";
     }
 
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV5(Item item) {
 
         itemRepository.save(item);
@@ -95,6 +96,15 @@ public class BasicItemController {
          * 이 이슈를 해결하기 위해 redirect 를 사용해서 실제 상품 상세 페이지로(/basic/item/{itemId}) 이동하게 한다.
          */
         return "redirect:/basic/items/" + item.getId();
+    }
+
+    @PostMapping("/add")
+    public String addItemV6(Item item, RedirectAttributes redirectAttributes) {
+
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);        // (등록이 됐을 때 true) return url 에 포함되지 못한 status 같은 attribute 는 queryParam(?status=true)로 들어간다.
+        return "redirect:/basic/items/{itemId}";        // =/basic/items/3?status=true
     }
 
 
